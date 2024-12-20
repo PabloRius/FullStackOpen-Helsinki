@@ -4,7 +4,7 @@ export const Content = (props) => {
   return (
     <>
       {props.parts.map((part) => (
-        <Part key={part.title} title={part.title} exercises={part.exercises} />
+        <Part key={part.name} title={part.name} exercises={part.exercises} />
       ))}
     </>
   );
