@@ -3,7 +3,7 @@ export const Statistics = (props) => {
   const all = good + neutral + bad;
   const average = (good - bad) / all;
   const positive = (good / all) * 100;
-  return (
+  return all > 0 ? (
     <div>
       <h2>Statistics</h2>
       <p>good {good}</p>
@@ -13,5 +13,7 @@ export const Statistics = (props) => {
       <p>average {average}</p>
       <p>positive {positive} %</p>
     </div>
+  ) : (
+    <p>No feedback given</p>
   );
 };
