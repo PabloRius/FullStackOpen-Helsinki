@@ -1,11 +1,15 @@
+import { Button } from "./Button";
+
 export const Selector = (props) => {
   return (
     <div>
       {props.options.map((option) => {
         return (
-          <button key={option.name} onClick={option.handler}>
-            {option.name}
-          </button>
+          <Button
+            key={option.name}
+            handleClick={option.handler}
+            title={option.name}
+          />
         );
       })}
     </div>

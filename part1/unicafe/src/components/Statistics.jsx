@@ -1,3 +1,5 @@
+import { StatisticLine } from "./StatisticLine";
+
 export const Statistics = (props) => {
   const { good, neutral, bad } = props;
   const all = good + neutral + bad;
@@ -6,12 +8,11 @@ export const Statistics = (props) => {
   return all > 0 ? (
     <div>
       <h2>Statistics</h2>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {all}</p>
-      <p>average {average}</p>
-      <p>positive {positive} %</p>
+      <StatisticLine title="good" value={good} />
+      <StatisticLine title="neutral" value={neutral} />
+      <StatisticLine title="bad" value={bad} />
+      <StatisticLine title="average" value={average} />
+      <StatisticLine title="positive" value={positive} endDecorator={"%"} />
     </div>
   ) : (
     <p>No feedback given</p>
