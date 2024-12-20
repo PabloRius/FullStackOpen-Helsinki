@@ -1,7 +1,10 @@
 export const StatisticLine = (props) => {
   return (
-    <p>
-      {props.title} {props.value} {props.endDecorator && props.endDecorator}
-    </p>
+    <tr>
+      <td>{props.title}</td>
+      <td>
+        {`${props.value} ${props.endDecorator ? props.endDecorator : ""}`}
+      </td>
+    </tr>
   );
 };
