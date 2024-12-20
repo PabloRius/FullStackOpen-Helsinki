@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChangeAnecdote } from "./components/ChangeAnecdote";
+import { Button } from "./components/Button";
 
 function App() {
   const anecdotes = [
@@ -14,17 +14,24 @@ function App() {
   ];
 
   const [selected, setSelected] = useState(0);
-  const changeSelected = (n) => {
-    setSelected(n);
+  const [votes, setVotes] = useState({});
+
+  const randomizeAnecdote = () => {
+    setSelected(Math.floor(Math.random() * anecdotes.length));
+  };
+
+  const voteAnecdote = () => {
+    setVotes((prev) => {
+      return { ...prev, [selected]: prev[selected] ? prev[selected] + 1 : 1 };
+    });
   };
 
   return (
     <div>
       <p>{anecdotes[selected]}</p>
-      <ChangeAnecdote
-        changeSelected={changeSelected}
-        anecdotes_n={anecdotes.length}
-      />
+      <p>has {votes[selected] ? votes[selected] : 0} votes</p>
+      <Button title="vote" handle={voteAnecdote} />
+      <Button title="next anecdote" handle={randomizeAnecdote} />
     </div>
   );
 }
