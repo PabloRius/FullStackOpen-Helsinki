@@ -1,5 +1,6 @@
 import { Header } from "./Header";
 import { Content } from "./Content";
+import { Total } from "./Total";
 
 export const Course = (props) => {
   const { course } = props;
@@ -8,7 +9,7 @@ export const Course = (props) => {
     <div>
       <Header course={course.title} />
       <Content parts={course.parts} />
-      {/* <Total total={total} /> */}
+      <Total total={total} />
     </div>
   );
 };
