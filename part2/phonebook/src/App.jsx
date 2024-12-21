@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { create, exists, getAll, deleteOne } from "./services/persons";
+import {
+  create,
+  exists,
+  getAll,
+  deleteOne,
+  updateOne,
+} from "./services/persons";
 
 import { PersonForm } from "./components/PersonForm";
 import { Filter } from "./components/Filter";
@@ -50,8 +56,24 @@ const App = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    if (exists(newName, persons)) {
-      alert(`${newName} is already added to phonebook`);
+    const existsPerson = exists(newName, persons);
+    if (existsPerson) {
+      const confirmation = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (!confirmation) return;
+      console.log(existsPerson);
+      const { id, name } = existsPerson;
+      const updatedUser = await updateOne(id, name, newPhone);
+      setPersons((prev) =>
+        prev.map((person) => {
+          if (person.id === id) {
+            return updatedUser;
+          } else {
+            return person;
+          }
+        })
+      );
       return;
     }
     const newPerson = await create(newName, newPhone);

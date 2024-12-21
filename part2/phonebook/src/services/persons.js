@@ -7,7 +7,8 @@ const getAll = async () => {
   return result.data;
 };
 const exists = (name, persons) => {
-  return persons.some((person) => person.name === name);
+  const exists = persons.find((person, index, array) => person.name === name);
+  return exists ? exists : false;
 };
 
 const create = async (name, number) => {
@@ -29,4 +30,9 @@ const deleteOne = async (id) => {
   return false;
 };
 
-export { getAll, exists, create, deleteOne };
+const updateOne = async (id, name, number) => {
+  const result = await axios.put(`${API_ENDPOINT}/${id}`, { name, number });
+  return result.data;
+};
+
+export { getAll, exists, create, deleteOne, updateOne };
