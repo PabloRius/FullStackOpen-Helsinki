@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { PersonForm } from "./components/PersonForm";
+import { Filter } from "./components/Filter";
+import { NumberList } from "./components/NumbersList";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -12,6 +15,20 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [filter, setFilter] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
+
+  useEffect(() => {
+    if (filter === "") {
+      setFilteredPersons(persons);
+      console.log("empty");
+
+      return;
+    }
+    setFilteredPersons(
+      persons.filter((person) => {
+        return person.name.toLowerCase().includes(filter);
+      })
+    );
+  }, [filter, persons]);
 
   const checkIfNameExists = (name) => {
     return persons.some((person) => person.name === name);
@@ -28,21 +45,6 @@ const App = () => {
   const handleFilterInput = (event) => {
     const newFilter = event.target.value;
     setFilter(newFilter);
-    if (newFilter === "") {
-      setFilteredPersons(persons);
-      console.log("empty");
-
-      return;
-    }
-    setFilteredPersons(
-      persons.filter((person) => {
-        const { name } = person;
-        const isFilter = name.includes(newFilter);
-        console.log(`name: ${name}, filter: ${newFilter}: ${isFilter}`);
-
-        return person.name.toLowerCase().includes(newFilter);
-      })
-    );
   };
 
   const handleFormSubmit = (event) => {
@@ -59,29 +61,15 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <div>
-        filter shown with:{" "}
-        <input type="text" value={filter} onChange={handleFilterInput} />
-      </div>
-      <form onSubmit={handleFormSubmit}>
-        <h2>add a new</h2>
-        <div>
-          name: <input type="text" value={newName} onChange={handleNameInput} />
-        </div>
-        <div>
-          number:{" "}
-          <input type="tel" value={newPhone} onChange={handlePhoneInput} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {filteredPersons.map((person) => (
-        <div key={person.name}>
-          {person.name} {person.number}
-        </div>
-      ))}
+      <Filter handleFilterInput={handleFilterInput} filter={filter} />
+      <PersonForm
+        handleFormSubmit={handleFormSubmit}
+        handleNameInput={handleNameInput}
+        newName={newName}
+        handlePhoneInput={handlePhoneInput}
+        newPhone={newPhone}
+      />
+      <NumberList persons={filteredPersons} />
     </div>
   );
 };
