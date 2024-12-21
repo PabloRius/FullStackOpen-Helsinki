@@ -11,6 +11,7 @@ import {
 import { PersonForm } from "./components/PersonForm";
 import { Filter } from "./components/Filter";
 import { NumberList } from "./components/NumbersList";
+import { Alert } from "./components/Alert";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -27,6 +28,8 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
   const [filter, setFilter] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
+
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (filter === "") {
@@ -62,7 +65,7 @@ const App = () => {
         `${newName} is already added to phonebook, replace the old number with a new one?`
       );
       if (!confirmation) return;
-      console.log(existsPerson);
+
       const { id, name } = existsPerson;
       const updatedUser = await updateOne(id, name, newPhone);
       setPersons((prev) =>
@@ -74,10 +77,15 @@ const App = () => {
           }
         })
       );
+
+      createAlert(`Updated ${updatedUser.name}`);
+
       return;
     }
     const newPerson = await create(newName, newPhone);
     setPersons((prev) => [...prev, newPerson]);
+
+    createAlert(`Added ${newPerson.name}`);
 
     setNewName("");
     setNewPhone("");
@@ -95,9 +103,17 @@ const App = () => {
     }
   };
 
+  const createAlert = (content) => {
+    setAlertMessage(content);
+    setTimeout(() => {
+      setAlertMessage("");
+    }, 2500);
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
+      <Alert active={alertMessage !== ""} content={alertMessage} />
       <Filter handleFilterInput={handleFilterInput} filter={filter} />
       <PersonForm
         handleFormSubmit={handleFormSubmit}
