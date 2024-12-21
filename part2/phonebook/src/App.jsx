@@ -4,12 +4,20 @@ const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
 
+  const checkIfNameExists = (name) => {
+    return persons.some((person) => person.name === name);
+  };
+
   const handleNameInput = (event) => {
     setNewName(event.target.value);
   };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    if (checkIfNameExists(newName)) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
     setPersons((prev) => [...prev, { name: newName }]);
     setNewName("");
   };
