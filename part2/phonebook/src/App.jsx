@@ -4,13 +4,14 @@ import { PersonForm } from "./components/PersonForm";
 import { Filter } from "./components/Filter";
 import { NumberList } from "./components/NumbersList";
 
+const API_ENDPOINT = "http://localhost:3001/persons";
+
 const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
-      const endpoint = "http://localhost:3001/persons";
-      const result = await axios.get(endpoint);
+      const result = await axios.get(API_ENDPOINT);
       setPersons(result.data);
     };
     fetchInitialData();
@@ -51,13 +52,17 @@ const App = () => {
     setFilter(newFilter);
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     if (checkIfNameExists(newName)) {
       alert(`${newName} is already added to phonebook`);
       return;
     }
-    setPersons((prev) => [...prev, { name: newName, number: newPhone }]);
+    const newPerson = { name: newName, number: newPhone };
+    const result = await axios.post(API_ENDPOINT, newPerson);
+    if (result.status === 201) {
+      setPersons((prev) => [...prev, result.data]);
+    }
     setNewName("");
     setNewPhone("");
   };
