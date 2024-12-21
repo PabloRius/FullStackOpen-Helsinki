@@ -29,7 +29,11 @@ const App = () => {
   const [filter, setFilter] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
 
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alertMessage, setAlertMessage] = useState({
+    active: false,
+    content: "",
+    status: "",
+  });
 
   useEffect(() => {
     if (filter === "") {
@@ -68,6 +72,16 @@ const App = () => {
 
       const { id, name } = existsPerson;
       const updatedUser = await updateOne(id, name, newPhone);
+      if (!updatedUser) {
+        createAlert(
+          `Information of ${name} has already been removed from the server`,
+          "error"
+        );
+        setPersons((prev) => {
+          return prev.filter((person) => person.id !== id);
+        });
+        return;
+      }
       setPersons((prev) =>
         prev.map((person) => {
           if (person.id === id) {
@@ -78,14 +92,14 @@ const App = () => {
         })
       );
 
-      createAlert(`Updated ${updatedUser.name}`);
+      createAlert(`Updated ${updatedUser.name}`, "ok");
 
       return;
     }
     const newPerson = await create(newName, newPhone);
     setPersons((prev) => [...prev, newPerson]);
 
-    createAlert(`Added ${newPerson.name}`);
+    createAlert(`Added ${newPerson.name}`, "ok");
 
     setNewName("");
     setNewPhone("");
@@ -100,20 +114,32 @@ const App = () => {
       setPersons((prev) => {
         return prev.filter((person) => person.id !== id);
       });
+    } else {
+      createAlert(
+        `Information of ${name} has already been removed from the server`,
+        "error"
+      );
+      setPersons((prev) => {
+        return prev.filter((person) => person.id !== id);
+      });
     }
   };
 
-  const createAlert = (content) => {
-    setAlertMessage(content);
+  const createAlert = (content, status) => {
+    setAlertMessage({ active: true, content, status });
     setTimeout(() => {
-      setAlertMessage("");
+      setAlertMessage({ active: false, content: "", status: "" });
     }, 2500);
   };
 
   return (
     <div>
       <h1>Phonebook</h1>
-      <Alert active={alertMessage !== ""} content={alertMessage} />
+      <Alert
+        active={alertMessage.active}
+        content={alertMessage.content}
+        status={alertMessage.status}
+      />
       <Filter handleFilterInput={handleFilterInput} filter={filter} />
       <PersonForm
         handleFormSubmit={handleFormSubmit}

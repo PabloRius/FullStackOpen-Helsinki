@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const API_ENDPOINT = "http://localhost:3001/persons";
 
@@ -23,16 +23,25 @@ const create = async (name, number) => {
 };
 
 const deleteOne = async (id) => {
-  const result = await axios.delete(`${API_ENDPOINT}/${id}`);
-  if (result.status === 200) {
-    return true;
+  try {
+    const result = await axios.delete(`${API_ENDPOINT}/${id}`);
+    if (result.status === 200) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
   }
-  return false;
 };
 
 const updateOne = async (id, name, number) => {
-  const result = await axios.put(`${API_ENDPOINT}/${id}`, { name, number });
-  return result.data;
+  try {
+    const result = await axios.put(`${API_ENDPOINT}/${id}`, { name, number });
+    if (result.status === 200) return result.data;
+    return null;
+  } catch {
+    return null;
+  }
 };
 
 export { getAll, exists, create, deleteOne, updateOne };

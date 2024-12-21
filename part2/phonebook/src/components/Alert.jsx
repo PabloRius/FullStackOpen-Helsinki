@@ -1,4 +1,4 @@
 export const Alert = (props) => {
-  const { active, content } = props;
-  return active && <p className="Alert">{content}</p>;
+  const { active, content, status } = props;
+  return active && <p className={`Alert ${status}`}>{content}</p>;
 };
