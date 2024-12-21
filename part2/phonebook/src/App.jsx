@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { create, exists, getAll } from "./services/persons";
+import { create, exists, getAll, deleteOne } from "./services/persons";
 
 import { PersonForm } from "./components/PersonForm";
 import { Filter } from "./components/Filter";
@@ -61,6 +61,18 @@ const App = () => {
     setNewPhone("");
   };
 
+  const handleDelete = async (id, name) => {
+    const confirmation = window.confirm(`Delete ${name}`);
+
+    if (!confirmation) return;
+    const deleted = await deleteOne(id);
+    if (deleted) {
+      setPersons((prev) => {
+        return prev.filter((person) => person.id !== id);
+      });
+    }
+  };
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -72,7 +84,7 @@ const App = () => {
         handlePhoneInput={handlePhoneInput}
         newPhone={newPhone}
       />
-      <NumberList persons={filteredPersons} />
+      <NumberList persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };

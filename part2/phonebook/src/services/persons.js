@@ -21,4 +21,12 @@ const create = async (name, number) => {
   return null;
 };
 
-export { getAll, exists, create };
+const deleteOne = async (id) => {
+  const result = await axios.delete(`${API_ENDPOINT}/${id}`);
+  if (result.status === 200) {
+    return true;
+  }
+  return false;
+};
+
+export { getAll, exists, create, deleteOne };
