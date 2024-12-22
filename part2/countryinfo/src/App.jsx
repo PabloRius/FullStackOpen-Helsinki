@@ -31,10 +31,15 @@ function App() {
     setFilter(newFilter);
   };
 
+  const handleSelect = (data) => {
+    const selection = [data];
+    setFilteredCountries(selection);
+  };
+
   return (
     <div>
       <Filter value={filter} handler={handleFilter} />
-      <Results data={filteredCountries} />
+      <Results data={filteredCountries} handleSelect={handleSelect} />
     </div>
   );
 }
