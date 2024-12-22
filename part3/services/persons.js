@@ -12,7 +12,7 @@ const getAll = async () => {
 
 const getOne = async (id) => {
   try {
-    const result = await axios.get(`http://localhost:3002/persons?id=${id}`);
+    const result = await axios.get(`http://localhost:3002/persons/${id}`);
 
     return result.data;
   } catch (e) {
@@ -23,15 +23,13 @@ const getOne = async (id) => {
 
 const deleteOne = async (id) => {
   try {
-    const result = await axios.get(`http://localhost:3002/persons/${id}`);
-
-    console.log(result);
-    if (filtered) return filtered[0];
-    else return undefined;
+    const result = await axios.delete(`http://localhost:3002/persons/${id}`);
+    return result.data;
   } catch (e) {
     console.error(e);
+    if (e.status === 404) return {};
     return null;
   }
 };
 
-export { getAll, getOne };
+export { getAll, getOne, deleteOne };
