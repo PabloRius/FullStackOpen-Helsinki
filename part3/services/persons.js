@@ -33,7 +33,6 @@ const createOne = async (id, name, number) => {
     throw new StatusError(400, "A number must be specified for the new person");
 
   const same_name = await getOneName(name);
-  console.log(same_name);
   if (same_name && same_name.length > 0)
     throw new StatusError(
       400,
