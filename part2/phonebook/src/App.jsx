@@ -97,6 +97,13 @@ const App = () => {
       return;
     }
     const newPerson = await create(newName, newPhone);
+    if (!newPerson) {
+      createAlert(
+        `Information of ${newName} has already been created in the server, reload the page`,
+        "error"
+      );
+      return;
+    }
     setPersons((prev) => [...prev, newPerson]);
 
     createAlert(`Added ${newPerson.name}`, "ok");

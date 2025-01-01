@@ -13,14 +13,15 @@ const exists = (name, persons) => {
 };
 
 const create = async (name, number) => {
-  const result = await axios.post(API_ENDPOINT, {
-    name,
-    number,
-  });
-  if (result.status === 201) {
+  try {
+    const result = await axios.post(API_ENDPOINT, {
+      name,
+      number,
+    });
     return result.data;
+  } catch (e) {
+    return null;
   }
-  return null;
 };
 
 const deleteOne = async (id) => {
@@ -37,7 +38,7 @@ const deleteOne = async (id) => {
 
 const updateOne = async (id, name, number) => {
   try {
-    const result = await axios.put(`${API_ENDPOINT}/${id}`, { name, number });
+    const result = await axios.put(`${API_ENDPOINT}/${id}`, { number });
     if (result.status === 200) return result.data;
     return null;
   } catch {

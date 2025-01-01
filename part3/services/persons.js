@@ -53,14 +53,14 @@ const deleteOne = async (id) => {
 };
 
 const createOne = async (id, name, number) => {
-  if (!id) throw new StatusError(500, "ID is required");
+  if (!id) throw new StatusError(400, "ID is required");
   if (!name) throw new StatusError(400, "Name is required");
   if (!number) throw new StatusError(400, "Number is required");
 
   const data = await readData();
   const same_name = data.find((p) => p.name === name);
 
-  if (same_name) throw new StatusError(400, `${name} is already in use`);
+  if (same_name) throw new StatusError(409, `${name} is already in use`);
 
   const newPerson = { id, name, number };
   data.push(newPerson);
@@ -69,4 +69,18 @@ const createOne = async (id, name, number) => {
   return newPerson;
 };
 
-export { getAll, getOne, createOne, deleteOne };
+const updateOne = async (id, number) => {
+  if (!id) throw new StatusError(400, "ID is required");
+  if (!number) throw new StatusError(400, "Number is required");
+
+  const data = await readData();
+  const index = data.findIndex((p) => p.id === id);
+  if (index === -1) throw new StatusError(404, `Id ${id} doesn't exist`);
+  const updatedPerson = { ...data[index], number };
+  data[index] = updatedPerson;
+  await writeData(data);
+
+  return updatedPerson;
+};
+
+export { getAll, getOne, createOne, deleteOne, updateOne };
