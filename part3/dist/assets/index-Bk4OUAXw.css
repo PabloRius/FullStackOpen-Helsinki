@@ -1,0 +1,1 @@
+.Alert{--green-var: rgb(29, 129, 25);--red-var: rgb(145, 19, 19);padding:15px;border-width:3px;border-style:solid;font-size:28px;border-radius:10px;background-color:#00000026}.Alert.ok{color:var(--green-var);border-color:var(--green-var)}.Alert.error{color:var(--red-var);border-color:var(--red-var)}
