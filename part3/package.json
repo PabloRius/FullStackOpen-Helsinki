@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "server": "json-server -p3002 --watch db.json"
+    "server": "json-server -p3002 --watch db.json",
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
