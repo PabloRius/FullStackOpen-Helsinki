@@ -11,7 +11,7 @@ persons_api.get("/", async (req, res) => {
     return res.status(200).json(persons);
   } catch (e) {
     return res
-      .status(e.status)
+      .status(e.status || 500)
       .json({ error: e.message || "Internal server error" });
   }
 });
@@ -30,7 +30,7 @@ persons_api.get("/:id", async (req, res) => {
 
       default:
         return res
-          .status(e.status)
+          .status(e.status || 500)
           .json({ error: e.message || "Internal server error" });
     }
   }
@@ -44,7 +44,7 @@ persons_api.post("/", async (req, res) => {
     return res.status(200).json(person);
   } catch (e) {
     return res
-      .status(e.status)
+      .status(e.status || 500)
       .json({ error: e.message || "Internal server error" });
   }
 });
@@ -63,7 +63,7 @@ persons_api.delete("/:id", async (req, res) => {
 
       default:
         return res
-          .status(e.status)
+          .status(e.status || 500)
           .json({ error: e.message || "Internal server error" });
     }
   }

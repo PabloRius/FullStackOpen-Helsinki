@@ -1,7 +1,7 @@
 import express from "express";
 import { api } from "./routes/api.js";
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(express.json());

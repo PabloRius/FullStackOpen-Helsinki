@@ -1,9 +1,10 @@
 import axios, { AxiosError } from "axios";
 
-const API_ENDPOINT = "http://localhost:3001/persons";
+const API_ENDPOINT = "http://localhost:3001/api/persons";
 
 const getAll = async () => {
   const result = await axios.get(API_ENDPOINT);
+  console.log(result);
   return result.data;
 };
 const exists = (name, persons) => {
