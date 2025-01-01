@@ -43,7 +43,7 @@ const App = () => {
     }
     setFilteredPersons(
       persons.filter((person) => {
-        return person.name.toLowerCase().includes(filter);
+        return person.name.toLowerCase().includes(filter.toLowerCase());
       })
     );
   }, [filter, persons]);
