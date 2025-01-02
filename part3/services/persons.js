@@ -6,8 +6,7 @@ const getAll = async () => {
     const data = await Person.find({});
     return data;
   } catch (e) {
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error retrieving data");
+    throw e;
   }
 };
 
@@ -19,20 +18,19 @@ const getOne = async (id) => {
 
     return person;
   } catch (e) {
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error retrieving data");
+    throw e;
   }
 };
 
 export const getOneName = async (name) => {
   try {
     const person = await Person.findOne({ name });
-    if (!person) return null;
+
+    if (!person) throw new StatusError(404, `Name ${name} doesn't exist`);
 
     return person;
   } catch (e) {
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error retrieving data");
+    throw e;
   }
 };
 
@@ -43,8 +41,7 @@ const deleteOne = async (id) => {
 
     return person;
   } catch (e) {
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error retrieving data");
+    throw e;
   }
 };
 
@@ -53,20 +50,21 @@ const createOne = async (name, number) => {
   if (!number) throw new StatusError(400, "Number is required");
 
   try {
-    const existing_person = await getOneName(name);
-    if (existing_person) {
-      throw new StatusError(409, `${name} is already in use.`);
+    const existingPerson = await Person.findOne({ name });
+    if (existingPerson) {
+      const conflictingError = new StatusError(
+        409,
+        `${name} is already in use.`
+      );
+      conflictingError.id = existingPerson._id;
+      throw conflictingError;
     }
 
     const newPerson = new Person({ name, number });
     await newPerson.save();
     return newPerson;
-  } catch (e) {
-    if (e instanceof StatusError) {
-      throw e;
-    }
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error creating data");
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -79,15 +77,15 @@ const updateOne = async (id, number) => {
     if (!existing_person) {
       throw new StatusError(404, `${id} not found.`);
     }
-    const updatedPerson = await Person.findByIdAndUpdate(id, { number });
-    console.log(updatedPerson);
+    const updatedPerson = await Person.findByIdAndUpdate(
+      id,
+      { number },
+      { runValidators: true }
+    );
+
     return updatedPerson;
   } catch (e) {
-    if (e instanceof StatusError) {
-      throw e;
-    }
-    console.error(e.message || "Undefined error message");
-    throw new StatusError(500, "Error creating data");
+    throw e;
   }
 };
 

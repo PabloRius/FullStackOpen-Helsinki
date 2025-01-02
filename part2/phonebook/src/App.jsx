@@ -63,57 +63,85 @@ const App = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const exists_username = await getOneName(newName);
-    if (!exists_username) {
-      create(newName, newPhone).then((newPerson) => {
+    create(newName, newPhone)
+      .then((newPerson) => {
+        setNewName("");
+        setNewPhone("");
         setPersons((prev) => [...prev, newPerson]);
         createAlert(`Added ${newPerson.name}`, "ok");
-      });
-    } else {
-      const confirmation = window.confirm(
-        `${newName} is already added to phonebook, replace the old number with a new one?`
-      );
-      if (!confirmation) return;
-
-      const { id } = exists_username;
-
-      updateOne(id, newPhone)
-        .then(() => {
-          setPersons((prev) =>
-            prev.map((person) => {
-              if (person.id === id) {
-                return { ...person, number: newPhone };
-              } else {
-                return person;
-              }
-            })
+      })
+      .catch((error) => {
+        if (error.status === 409) {
+          const confirmation = window.confirm(
+            `${newName} is already added to phonebook, replace the old number with a new one?`
           );
-          createAlert(`Updated ${newName}`, "ok");
-        })
-        .catch((err) => console.error(`Error updating the user: ${err}`));
-    }
-    setNewName("");
-    setNewPhone("");
+          if (!confirmation) return;
+          console.log(`RESPONSE`);
+          console.log(error.response);
+          const { id } = error.response.data;
+
+          updateOne(id, newPhone)
+            .then(() => {
+              setNewName("");
+              setNewPhone("");
+              setPersons((prev) =>
+                prev.map((person) => {
+                  if (person.id === id) {
+                    return { ...person, number: newPhone };
+                  } else {
+                    return person;
+                  }
+                })
+              );
+              createAlert(`Updated ${newName}`, "ok");
+            })
+            .catch((err) => {
+              const outMessage = `Error creating the user: ${
+                err.response?.data?.error || err.message || ""
+              }`;
+              console.error(outMessage);
+              createAlert(outMessage);
+            });
+        } else {
+          const outMessage = `Error creating the user: ${
+            error.response?.data?.error || error.message || ""
+          }`;
+          console.error(outMessage);
+          createAlert(outMessage);
+        }
+      });
   };
 
   const handleDelete = async (id, name) => {
     const confirmation = window.confirm(`Delete ${name}`);
 
     if (!confirmation) return;
-    const deleted = await deleteOne(id);
-    if (deleted) {
-      setPersons((prev) => {
-        return prev.filter((person) => person.id !== id);
+    deleteOne(id)
+      .then((deleted) => {
+        if (deleted) {
+          setPersons((prev) => {
+            return prev.filter((person) => person.id !== id);
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        if (error.status === 404) {
+          createAlert(
+            `Information of ${name} has already been removed from the server`,
+            "error"
+          );
+          setPersons((prev) => {
+            return prev.filter((person) => person.id !== id);
+          });
+        } else {
+          const outMessage = `Error deleting the user: ${
+            error.response?.data?.error || error.message || ""
+          }`;
+          console.error(outMessage);
+          createAlert(outMessage);
+        }
       });
-    } else {
-      createAlert(
-        `Information of ${name} has already been removed from the server`,
-        "error"
-      );
-      setPersons((prev) => {
-        return prev.filter((person) => person.id !== id);
-      });
-    }
   };
 
   const createAlert = (content, status) => {

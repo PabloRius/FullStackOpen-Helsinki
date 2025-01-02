@@ -8,18 +8,11 @@ const getAll = async () => {
 };
 
 const create = async (name, number) => {
-  try {
-    const result = await axios.post(API_ENDPOINT, {
-      name,
-      number,
-    });
-    return result.data;
-  } catch (e) {
-    if (e.status === 409) {
-      throw e;
-    }
-    return null;
-  }
+  const result = await axios.post(API_ENDPOINT, {
+    name,
+    number,
+  });
+  return result.data;
 };
 
 const getOneName = async (name) => {
@@ -28,26 +21,13 @@ const getOneName = async (name) => {
 };
 
 const deleteOne = async (id) => {
-  try {
-    const result = await axios.delete(`${API_ENDPOINT}/${id}`);
-    if (result.status === 200) {
-      return true;
-    }
-    return false;
-  } catch {
-    return false;
-  }
+  const result = await axios.delete(`${API_ENDPOINT}/${id}`);
+  return result;
 };
 
 const updateOne = async (id, number) => {
-  try {
-    const result = await axios.put(`${API_ENDPOINT}/${id}`, { number });
-    console.log(`Updated: ${result}`);
-    if (result.status === 200) return result.data;
-    return null;
-  } catch {
-    return null;
-  }
+  const result = await axios.put(`${API_ENDPOINT}/${id}`, { number });
+  return result.data;
 };
 
 export { getAll, getOneName, create, deleteOne, updateOne };
