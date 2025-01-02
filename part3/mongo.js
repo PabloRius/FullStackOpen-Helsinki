@@ -8,7 +8,7 @@ const name = process.argv[3];
 const number = process.argv[4];
 
 const connectionString = `mongodb+srv://pablogrius:${password}@fullstackopen.flmxp.mongodb.net/FullStackOpen?retryWrites=true&w=majority&appName=FullStackOpen`;
-
+console.log(connectionString);
 mongoose.set("strictQuery", false);
 
 mongoose

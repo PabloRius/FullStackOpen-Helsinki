@@ -1,15 +1,10 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 const API_ENDPOINT = "/api/persons";
 
 const getAll = async () => {
   const result = await axios.get(API_ENDPOINT);
-  console.log(result);
   return result.data;
-};
-const exists = (name, persons) => {
-  const exists = persons.find((person, index, array) => person.name === name);
-  return exists ? exists : false;
 };
 
 const create = async (name, number) => {
@@ -20,8 +15,16 @@ const create = async (name, number) => {
     });
     return result.data;
   } catch (e) {
+    if (e.status === 409) {
+      throw e;
+    }
     return null;
   }
+};
+
+const getOneName = async (name) => {
+  const result = await axios.get(`${API_ENDPOINT}?name=${name}`);
+  return result.data;
 };
 
 const deleteOne = async (id) => {
@@ -36,9 +39,10 @@ const deleteOne = async (id) => {
   }
 };
 
-const updateOne = async (id, name, number) => {
+const updateOne = async (id, number) => {
   try {
     const result = await axios.put(`${API_ENDPOINT}/${id}`, { number });
+    console.log(`Updated: ${result}`);
     if (result.status === 200) return result.data;
     return null;
   } catch {
@@ -46,4 +50,4 @@ const updateOne = async (id, name, number) => {
   }
 };
 
-export { getAll, exists, create, deleteOne, updateOne };
+export { getAll, getOneName, create, deleteOne, updateOne };

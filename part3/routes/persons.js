@@ -5,13 +5,19 @@ import {
   deleteOne,
   getAll,
   getOne,
+  getOneName,
   updateOne,
 } from "../services/persons.js";
 
 export const persons_api = express();
 
 persons_api.get("/", async (req, res) => {
+  const name = req.query.name;
   try {
+    if (name) {
+      const person = await getOneName(name);
+      return res.status(200).json(person);
+    }
     const persons = await getAll();
 
     return res.status(200).json(persons);
@@ -45,8 +51,7 @@ persons_api.get("/:id", async (req, res) => {
 persons_api.post("/", async (req, res) => {
   try {
     const { name, number } = req.body;
-    const random_id = Math.floor(Math.random() * 100).toString();
-    const person = await createOne(random_id, name, number);
+    const person = await createOne(name, number);
     return res.status(200).json(person);
   } catch (e) {
     return res
@@ -83,16 +88,8 @@ persons_api.put("/:id", async (req, res) => {
     const person = await updateOne(id, number);
     return res.status(200).json(person);
   } catch (e) {
-    switch (e.status) {
-      case 404:
-        return res
-          .status(404)
-          .json({ error: `ID ${id} doesn't exist on the server` });
-
-      default:
-        return res
-          .status(e.status || 500)
-          .json({ error: e.message || "Internal server error" });
-    }
+    return res
+      .status(e.status || 500)
+      .json({ error: e.message || "Internal server error" });
   }
 });

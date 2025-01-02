@@ -1,86 +1,94 @@
-import fs from "fs/promises";
-import path from "path";
-
+import Person from "../models/person.js";
 import { StatusError } from "../custom/error.js";
 
-const filePath = path.resolve("data", "persons.json");
-
-const readData = async () => {
-  try {
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  } catch (e) {
-    throw new StatusError(500, "Error reading the file");
-  }
-};
-
-const writeData = async (data) => {
-  try {
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
-  } catch (e) {
-    throw new StatusError(500, "Error writing data to file");
-  }
-};
-
 const getAll = async () => {
-  return await readData();
+  try {
+    const data = await Person.find({});
+    return data;
+  } catch (e) {
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error retrieving data");
+  }
 };
 
 const getOne = async (id) => {
-  const data = await readData();
-  const person = data.find((p) => p.id === id);
-  if (!person) throw new StatusError(404, `Id ${id} doesn't exist`);
+  try {
+    const person = await Person.findById(id);
 
-  return person;
+    if (!person) throw new StatusError(404, `Id ${id} doesn't exist`);
+
+    return person;
+  } catch (e) {
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error retrieving data");
+  }
 };
 
-const getOneName = async (name) => {
-  const data = await readData();
-  const person = data.find((p) => p.name === name);
-  if (!person) throw new StatusError(404, `Name ${name} doesn't exist`);
+export const getOneName = async (name) => {
+  try {
+    const person = await Person.findOne({ name });
+    if (!person) return null;
 
-  return person;
+    return person;
+  } catch (e) {
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error retrieving data");
+  }
 };
 
 const deleteOne = async (id) => {
-  const data = await readData();
-  const index = data.findIndex((p) => p.id === id);
-  if (index === -1) throw new StatusError(404, `Id ${id} doesn't exist`);
-  const [deletedPerson] = data.splice(index, 1);
-  await writeData(data);
+  try {
+    const person = await Person.findByIdAndDelete(id);
+    if (!person) throw new StatusError(404, `Id ${id} doesn't exist`);
 
-  return deletedPerson;
+    return person;
+  } catch (e) {
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error retrieving data");
+  }
 };
 
-const createOne = async (id, name, number) => {
-  if (!id) throw new StatusError(400, "ID is required");
+const createOne = async (name, number) => {
   if (!name) throw new StatusError(400, "Name is required");
   if (!number) throw new StatusError(400, "Number is required");
 
-  const data = await readData();
-  const same_name = data.find((p) => p.name === name);
+  try {
+    const existing_person = await getOneName(name);
+    if (existing_person) {
+      throw new StatusError(409, `${name} is already in use.`);
+    }
 
-  if (same_name) throw new StatusError(409, `${name} is already in use`);
-
-  const newPerson = { id, name, number };
-  data.push(newPerson);
-  await writeData(data);
-
-  return newPerson;
+    const newPerson = new Person({ name, number });
+    await newPerson.save();
+    return newPerson;
+  } catch (e) {
+    if (e instanceof StatusError) {
+      throw e;
+    }
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error creating data");
+  }
 };
 
 const updateOne = async (id, number) => {
   if (!id) throw new StatusError(400, "ID is required");
   if (!number) throw new StatusError(400, "Number is required");
 
-  const data = await readData();
-  const index = data.findIndex((p) => p.id === id);
-  if (index === -1) throw new StatusError(404, `Id ${id} doesn't exist`);
-  const updatedPerson = { ...data[index], number };
-  data[index] = updatedPerson;
-  await writeData(data);
-
-  return updatedPerson;
+  try {
+    const existing_person = await getOne(id);
+    if (!existing_person) {
+      throw new StatusError(404, `${id} not found.`);
+    }
+    const updatedPerson = await Person.findByIdAndUpdate(id, { number });
+    console.log(updatedPerson);
+    return updatedPerson;
+  } catch (e) {
+    if (e instanceof StatusError) {
+      throw e;
+    }
+    console.error(e.message || "Undefined error message");
+    throw new StatusError(500, "Error creating data");
+  }
 };
 
 export { getAll, getOne, createOne, deleteOne, updateOne };

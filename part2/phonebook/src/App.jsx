@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 
 import {
   create,
-  exists,
   getAll,
   deleteOne,
   updateOne,
+  getOneName,
 } from "./services/persons";
 
 import { PersonForm } from "./components/PersonForm";
@@ -63,51 +63,35 @@ const App = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const existsPerson = exists(newName, persons);
-    if (existsPerson) {
+    const exists_username = await getOneName(newName);
+    if (!exists_username) {
+      create(newName, newPhone).then((newPerson) => {
+        setPersons((prev) => [...prev, newPerson]);
+        createAlert(`Added ${newPerson.name}`, "ok");
+      });
+    } else {
       const confirmation = window.confirm(
         `${newName} is already added to phonebook, replace the old number with a new one?`
       );
       if (!confirmation) return;
 
-      const { id, name } = existsPerson;
-      const updatedUser = await updateOne(id, name, newPhone);
-      if (!updatedUser) {
-        createAlert(
-          `Information of ${name} has already been removed from the server`,
-          "error"
-        );
-        setPersons((prev) => {
-          return prev.filter((person) => person.id !== id);
-        });
-        return;
-      }
-      setPersons((prev) =>
-        prev.map((person) => {
-          if (person.id === id) {
-            return updatedUser;
-          } else {
-            return person;
-          }
+      const { id } = exists_username;
+
+      updateOne(id, newPhone)
+        .then(() => {
+          setPersons((prev) =>
+            prev.map((person) => {
+              if (person.id === id) {
+                return { ...person, number: newPhone };
+              } else {
+                return person;
+              }
+            })
+          );
+          createAlert(`Updated ${newName}`, "ok");
         })
-      );
-
-      createAlert(`Updated ${updatedUser.name}`, "ok");
-
-      return;
+        .catch((err) => console.error(`Error updating the user: ${err}`));
     }
-    const newPerson = await create(newName, newPhone);
-    if (!newPerson) {
-      createAlert(
-        `Information of ${newName} has already been created in the server, reload the page`,
-        "error"
-      );
-      return;
-    }
-    setPersons((prev) => [...prev, newPerson]);
-
-    createAlert(`Added ${newPerson.name}`, "ok");
-
     setNewName("");
     setNewPhone("");
   };
