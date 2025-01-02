@@ -11,85 +11,44 @@ import {
 
 export const persons_api = express();
 
-persons_api.get("/", async (req, res) => {
+persons_api.get("/", async (req, res, next) => {
   const name = req.query.name;
-  try {
-    if (name) {
-      const person = await getOneName(name);
-      return res.status(200).json(person);
-    }
-    const persons = await getAll();
-
-    return res.status(200).json(persons);
-  } catch (e) {
-    return res
-      .status(e.status || 500)
-      .json({ error: e.message || "Internal server error" });
+  if (name) {
+    getOneName(name)
+      .then((person) => res.status(200).json(person))
+      .catch((error) => next(error));
+  } else {
+    getAll()
+      .then((persons) => res.status(200).json(persons))
+      .catch((error) => next(error));
   }
 });
 
-persons_api.get("/:id", async (req, res) => {
+persons_api.get("/:id", async (req, res, next) => {
   const id = req.params.id;
-  try {
-    const person = await getOne(id);
-    return res.status(200).json(person);
-  } catch (e) {
-    switch (e.status) {
-      case 404:
-        return res
-          .status(404)
-          .json({ error: `ID ${id} doesn't exist on the server` });
-
-      default:
-        return res
-          .status(e.status || 500)
-          .json({ error: e.message || "Internal server error" });
-    }
-  }
+  getOne(id)
+    .then((person) => res.status(200).json(person))
+    .catch((error) => next(error));
 });
 
-persons_api.post("/", async (req, res) => {
-  try {
-    const { name, number } = req.body;
-    const person = await createOne(name, number);
-    return res.status(200).json(person);
-  } catch (e) {
-    return res
-      .status(e.status || 500)
-      .json({ error: e.message || "Internal server error" });
-  }
+persons_api.post("/", async (req, res, next) => {
+  const { name, number } = req.body;
+  createOne(name, number)
+    .then((person) => res.status(200).json(person))
+    .catch((error) => next(error));
 });
 
-persons_api.delete("/:id", async (req, res) => {
+persons_api.delete("/:id", async (req, res, next) => {
   const id = req.params.id;
-  try {
-    const person = await deleteOne(id);
-    return res.status(200).json(person);
-  } catch (e) {
-    switch (e.status) {
-      case 404:
-        return res
-          .status(404)
-          .json({ error: `ID ${id} doesn't exist on the server` });
-
-      default:
-        return res
-          .status(e.status || 500)
-          .json({ error: e.message || "Internal server error" });
-    }
-  }
+  deleteOne(id)
+    .then((person) => res.status(200).json(person))
+    .catch((error) => next(error));
 });
 
-persons_api.put("/:id", async (req, res) => {
-  console.log(req);
+persons_api.put("/:id", async (req, res, next) => {
   const id = req.params.id;
   const { number } = req.body;
-  try {
-    const person = await updateOne(id, number);
-    return res.status(200).json(person);
-  } catch (e) {
-    return res
-      .status(e.status || 500)
-      .json({ error: e.message || "Internal server error" });
-  }
+  updateOne(id, number)
+    .then((person) => res.status(200).json(person))
+    .catch((error) => next(error));
 });
