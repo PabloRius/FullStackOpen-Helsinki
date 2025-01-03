@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAll } from '../services/persons.js'
+import { getAll } from '../controllers/persons.js'
 
 export const info_api = express()
 

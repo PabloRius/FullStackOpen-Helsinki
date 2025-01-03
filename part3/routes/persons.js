@@ -7,7 +7,7 @@ import {
   getOne,
   getOneName,
   updateOne,
-} from '../services/persons.js'
+} from '../controllers/persons.js'
 
 export const persons_api = express()
 
