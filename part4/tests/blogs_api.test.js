@@ -5,7 +5,11 @@ import supertest from "supertest";
 
 import { app } from "../app.js";
 import Blog from "../models/blog.js";
-import { extraBlog, initialBlogs } from "./test_helper.js";
+import {
+  extraBlog,
+  extraBlogMissingLikes,
+  initialBlogs,
+} from "./test_helper.js";
 
 const api = supertest(app);
 
@@ -55,5 +59,22 @@ describe("blogs api", () => {
     const authors = allBlogs.body.map((e) => e.author);
     strictEqual(allBlogs.body.length, initialBlogs.length + 1);
     assert(authors.includes(extraBlog.author));
+  });
+
+  test("sets likes to 0 when not specified", async () => {
+    const newBlogResponse = await api
+      .post("/api/blogs")
+      .send(extraBlogMissingLikes)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+
+    const newId = newBlogResponse.body.id;
+
+    const createdBlogResponse = await api
+      .get(`/api/blogs/${newId}`)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+
+    strictEqual(createdBlogResponse.body.likes, 0);
   });
 });

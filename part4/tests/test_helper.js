@@ -106,4 +106,17 @@ const extraBlog = {
   likes: 47,
 };
 
-export { emptyBlogsList, oneBlogList, blogs, initialBlogs, extraBlog };
+const extraBlogMissingLikes = {
+  title: "Nobody Likes Me",
+  author: "Sad Sadinsky",
+  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+};
+
+export {
+  emptyBlogsList,
+  oneBlogList,
+  blogs,
+  initialBlogs,
+  extraBlog,
+  extraBlogMissingLikes,
+};
