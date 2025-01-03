@@ -12,5 +12,5 @@ app.use('/api', api)
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  info(`Server running on port ${PORT}`)
 })
