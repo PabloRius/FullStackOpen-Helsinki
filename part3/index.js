@@ -2,6 +2,7 @@ import express from 'express'
 import { api } from './routes/api.js'
 import { errorHandler } from './middleware/middleware.js'
 import { PORT } from './utils/config.js'
+import { info } from './utils/logger.js'
 
 const app = express()
 app.use(express.json())
