@@ -8,7 +8,8 @@
     "start": "node index.js",
     "build": "npm install",
     "lint": "eslint . --ignore-pattern dist/*",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
