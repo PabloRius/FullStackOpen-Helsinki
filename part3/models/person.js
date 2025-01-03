@@ -1,19 +1,19 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from 'mongoose'
 
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from 'dotenv'
+dotenv.config()
 
-const CONNECTION_STRING = process.env.MONGODB_URI;
+const CONNECTION_STRING = process.env.MONGODB_URI
 
-mongoose.set("strictQuery", false);
+mongoose.set('strictQuery', false)
 mongoose
   .connect(CONNECTION_STRING)
   .then(() => {
-    console.log("Connected to MongoDB");
+    console.log('Connected to MongoDB')
   })
   .catch((err) => {
-    console.error(`Error connecting to MongoDB: ${err.message}`);
-  });
+    console.error(`Error connecting to MongoDB: ${err.message}`)
+  })
 
 const personSchema = new mongoose.Schema({
   name: { type: String, minLength: 3, required: true },
@@ -23,26 +23,26 @@ const personSchema = new mongoose.Schema({
     minLength: 8,
     validate: {
       validator: function (v) {
-        return /^\d{2,3}-\d+$/.test(v);
+        return /^\d{2,3}-\d+$/.test(v)
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
   },
-});
-personSchema.set("toJSON", {
+})
+personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-    returnedObject.id = document._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+    returnedObject.id = document._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
   },
-});
-const Person = mongoose.model("Person", personSchema, "phonebook");
+})
+const Person = mongoose.model('Person', personSchema, 'phonebook')
 
-process.on("SIGINT", () => {
+process.on('SIGINT', () => {
   mongoose.connection.close(() => {
-    console.log("Mongoose connection disconnected due to app termination");
-    process.exit(0);
-  });
-});
+    console.log('Mongoose connection disconnected due to app termination')
+    process.exit(0)
+  })
+})
 
-export default Person;
+export default Person
