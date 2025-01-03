@@ -4,6 +4,7 @@ import {
   dummy,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
   totalLikes,
 } from "../utils/list_helper.js";
 
@@ -116,7 +117,7 @@ describe("favorite blog", () => {
   });
 });
 
-describe("top blogger", () => {
+describe("top blogger (by # of posts)", () => {
   test("of empty list is null", () => {
     const result = mostBlogs(emptyBlogsList);
     strictEqual(result, null);
@@ -133,6 +134,27 @@ describe("top blogger", () => {
     deepStrictEqual(result, {
       author: "Robert C. Martin",
       blogs: 3,
+    });
+  });
+});
+
+describe("top blogger (by likes)", () => {
+  test("of empty list is null", () => {
+    const result = mostLikes(emptyBlogsList);
+    strictEqual(result, null);
+  });
+  test("when list has only one blog equals that", () => {
+    const result = mostLikes(oneBlogList);
+    deepStrictEqual(result, {
+      author: "Michael Chan",
+      likes: 7,
+    });
+  });
+  test("of a bigger list is calculated right", () => {
+    const result = mostLikes(blogs);
+    deepStrictEqual(result, {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
     });
   });
 });
