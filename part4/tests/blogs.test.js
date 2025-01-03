@@ -1,6 +1,11 @@
 import { describe, test } from "node:test";
 import { deepStrictEqual, strictEqual } from "node:assert";
-import { dummy, favoriteBlog, totalLikes } from "../utils/list_helper.js";
+import {
+  dummy,
+  favoriteBlog,
+  mostBlogs,
+  totalLikes,
+} from "../utils/list_helper.js";
 
 const emptyBlogsList = [];
 const oneBlogList = [
@@ -98,7 +103,7 @@ describe("favorite blog", () => {
       __v: 0,
     });
   });
-  test("of a bigger list is calcualted right", () => {
+  test("of a bigger list is calculated right", () => {
     const result = favoriteBlog(blogs);
     deepStrictEqual(result, {
       _id: "5a422b3a1b54a676234d17f9",
@@ -107,6 +112,27 @@ describe("favorite blog", () => {
       url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
       likes: 12,
       __v: 0,
+    });
+  });
+});
+
+describe("top blogger", () => {
+  test("of empty list is null", () => {
+    const result = mostBlogs(emptyBlogsList);
+    strictEqual(result, null);
+  });
+  test("when list has only one blog equals that", () => {
+    const result = mostBlogs(oneBlogList);
+    deepStrictEqual(result, {
+      author: "Michael Chan",
+      blogs: 1,
+    });
+  });
+  test("of a bigger list is calculated right", () => {
+    const result = mostBlogs(blogs);
+    deepStrictEqual(result, {
+      author: "Robert C. Martin",
+      blogs: 3,
     });
   });
 });
