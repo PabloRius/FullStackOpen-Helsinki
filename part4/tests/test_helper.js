@@ -112,6 +112,24 @@ const extraBlogMissingLikes = {
   url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
 };
 
+const extraBlogMissingAuthor = {
+  title: "Adopt Me",
+  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  likes: 5,
+};
+
+const extraBlogMissingTitle = {
+  author: "Say My Name",
+  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  likes: 1,
+};
+
+const extraBlogMissingUrl = {
+  title: "Read Some",
+  author: "Actual Books",
+  likes: 1,
+};
+
 export {
   emptyBlogsList,
   oneBlogList,
@@ -119,4 +137,7 @@ export {
   initialBlogs,
   extraBlog,
   extraBlogMissingLikes,
+  extraBlogMissingAuthor,
+  extraBlogMissingTitle,
+  extraBlogMissingUrl,
 };

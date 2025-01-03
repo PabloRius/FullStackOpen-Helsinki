@@ -7,7 +7,9 @@ import { app } from "../app.js";
 import Blog from "../models/blog.js";
 import {
   extraBlog,
+  extraBlogMissingAuthor,
   extraBlogMissingLikes,
+  extraBlogMissingTitle,
   initialBlogs,
 } from "./test_helper.js";
 
@@ -76,5 +78,11 @@ describe("blogs api", () => {
       .expect("Content-Type", /application\/json/);
 
     strictEqual(createdBlogResponse.body.likes, 0);
+  });
+
+  test("missing an attribute throws a 400", async () => {
+    await api.post("/api/blogs").send(extraBlogMissingAuthor).expect(400);
+    await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
+    await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
   });
 });
