@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import { MONGODB_URI } from '../utils/config'
-import { error, info } from '../utils/logger'
+import { MONGODB_URI } from './utils/config.js'
+import { error, info } from './utils/logger.js'
 
 export const init_mongo = () => {
   mongoose.set('strictQuery', false)

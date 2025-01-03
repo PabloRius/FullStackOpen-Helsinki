@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { info } from '../utils/logger'
+import { info } from '../utils/logger.js'
 
 const personSchema = new mongoose.Schema({
   name: { type: String, minLength: 3, required: true },

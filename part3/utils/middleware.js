@@ -1,4 +1,4 @@
-import { error } from './logger'
+import { error } from './logger.js'
 
 export const errorHandler = (err, request, response) => {
   error(

@@ -1,6 +1,6 @@
 import express from 'express'
 import { api } from './routes/api.js'
-import { errorHandler } from './middleware/middleware.js'
+import { errorHandler } from './utils/middleware.js'
 import { PORT } from './utils/config.js'
 import { info } from './utils/logger.js'
 import { init_mongo } from './app.js'
