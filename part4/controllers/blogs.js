@@ -26,7 +26,7 @@ blogs_app.get("/:id", async (req, res, next) => {
 });
 
 blogs_app.post("/", async (req, res, next) => {
-  const newBlog = new Blog({ ...req.body, likes: 0 });
+  const newBlog = new Blog(req.body);
   newBlog
     .save()
     .then((savedBlog) => {

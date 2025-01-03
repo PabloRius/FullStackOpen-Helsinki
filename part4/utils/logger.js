@@ -1,8 +1,14 @@
-const info = (...params) => {
-  console.log(...params)
-}
-const error = (...params) => {
-  console.error(...params)
-}
+import { ENV } from "./config.js";
 
-export { info, error }
+const info = (...params) => {
+  if (ENV !== "test") {
+    console.log(...params);
+  }
+};
+const error = (...params) => {
+  if (ENV !== "test") {
+    console.error(...params);
+  }
+};
+
+export { info, error };
