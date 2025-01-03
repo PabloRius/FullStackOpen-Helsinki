@@ -1,5 +1,5 @@
 import Person from '../models/person.js'
-import { StatusError } from '../custom/error.js'
+import { StatusError } from '../custom/StatusError.js'
 
 const getAll = async () => {
   const data = await Person.find({})

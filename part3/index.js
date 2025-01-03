@@ -1,8 +1,7 @@
 import express from 'express'
 import { api } from './routes/api.js'
-import { errorHandler } from './middleware/error.js'
-
-const PORT = process.env.PORT || 3001
+import { errorHandler } from './middleware/middleware.js'
+import { PORT } from './utils/config.js'
 
 const app = express()
 app.use(express.json())
