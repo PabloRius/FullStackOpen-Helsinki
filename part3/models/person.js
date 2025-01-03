@@ -1,16 +1,5 @@
 import mongoose from 'mongoose'
-import { MONGODB_URI } from '../utils/config'
-import { error, info } from '../utils/logger'
-
-mongoose.set('strictQuery', false)
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    info('Connected to MongoDB')
-  })
-  .catch((err) => {
-    error(`Error connecting to MongoDB: ${err.message}`)
-  })
+import { info } from '../utils/logger'
 
 const personSchema = new mongoose.Schema({
   name: { type: String, minLength: 3, required: true },
