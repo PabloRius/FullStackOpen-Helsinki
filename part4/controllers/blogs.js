@@ -30,7 +30,7 @@ blogs_app.post("/", async (req, res, next) => {
   newBlog
     .save()
     .then((savedBlog) => {
-      res.status(200).json(savedBlog);
+      res.status(201).json(savedBlog);
     })
     .catch((err) => {
       info(next);

@@ -99,4 +99,11 @@ const initialBlogs = [
   },
 ];
 
-export { emptyBlogsList, oneBlogList, blogs, initialBlogs };
+const extraBlog = {
+  title: "Clean Code",
+  author: "Brandon Sanderson",
+  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
+  likes: 47,
+};
+
+export { emptyBlogsList, oneBlogList, blogs, initialBlogs, extraBlog };
