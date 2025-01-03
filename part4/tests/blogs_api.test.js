@@ -1,4 +1,4 @@
-import { test, after, beforeEach } from "node:test";
+import { test, after, beforeEach, describe } from "node:test";
 import { strictEqual } from "node:assert";
 import mongoose from "mongoose";
 import supertest from "supertest";
@@ -21,15 +21,27 @@ after(async () => {
   await mongoose.connection.close();
 });
 
-test("blogs are returned as a json", async () => {
-  await api
-    .get("/api/blogs")
-    .expect(200)
-    .expect("Content-Type", /application\/json/);
-});
+describe("blogs api", () => {
+  test("blogs are returned as a json", async () => {
+    await api
+      .get("/api/blogs")
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+  });
 
-test("there are two notes", async () => {
-  const response = await api.get("/api/blogs");
+  test("there are two blogs", async () => {
+    const response = await api.get("/api/blogs");
 
-  strictEqual(response.body.length, initialBlogs.length);
+    strictEqual(response.body.length, initialBlogs.length);
+  });
+
+  test("there is a id for each blog", async () => {
+    const response = await api.get("/api/blogs");
+    strictEqual(
+      response.body.every((blog) => {
+        return "id" in blog;
+      }),
+      true
+    );
+  });
 });
