@@ -1,14 +1,15 @@
 import mongoose from 'mongoose'
 import { MONGODB_URI } from '../utils/config'
+import { error, info } from '../utils/logger'
 
 mongoose.set('strictQuery', false)
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    console.log('Connected to MongoDB')
+    info('Connected to MongoDB')
   })
   .catch((err) => {
-    console.error(`Error connecting to MongoDB: ${err.message}`)
+    error(`Error connecting to MongoDB: ${err.message}`)
   })
 
 const personSchema = new mongoose.Schema({
@@ -36,7 +37,7 @@ const Person = mongoose.model('Person', personSchema, 'phonebook')
 
 process.on('SIGINT', () => {
   mongoose.connection.close(() => {
-    console.log('Mongoose connection disconnected due to app termination')
+    info('Mongoose connection disconnected due to app termination')
     process.exit(0)
   })
 })
