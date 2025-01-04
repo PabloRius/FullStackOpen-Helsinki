@@ -5,20 +5,14 @@ import supertest from "supertest";
 
 import { app } from "../app.js";
 import Blog from "../models/blog.js";
-import {
-  extraBlog,
-  extraBlogMissingAuthor,
-  extraBlogMissingLikes,
-  extraBlogMissingTitle,
-  initialBlogs,
-} from "./test_helper.js";
+import helper from "./test_helper.js";
 
 const api = supertest(app);
 
 beforeEach(async () => {
   await Blog.deleteMany({});
 
-  const blogObjects = initialBlogs.map((blog) => new Blog(blog));
+  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
 });
@@ -38,7 +32,7 @@ describe("blogs api", () => {
   test("there are two blogs", async () => {
     const response = await api.get("/api/blogs");
 
-    strictEqual(response.body.length, initialBlogs.length);
+    strictEqual(response.body.length, helper.initialBlogs.length);
   });
 
   test("there is a id for each blog", async () => {
@@ -53,20 +47,20 @@ describe("blogs api", () => {
   test("adds every blog received through a post to the database", async () => {
     await api
       .post("/api/blogs")
-      .send(extraBlog)
+      .send(helper.extraBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
     const allBlogs = await api.get("/api/blogs");
     const authors = allBlogs.body.map((e) => e.author);
-    strictEqual(allBlogs.body.length, initialBlogs.length + 1);
-    assert(authors.includes(extraBlog.author));
+    strictEqual(allBlogs.body.length, helper.initialBlogs.length + 1);
+    assert(authors.includes(helper.extraBlog.author));
   });
 
   test("sets likes to 0 when not specified", async () => {
     const newBlogResponse = await api
       .post("/api/blogs")
-      .send(extraBlogMissingLikes)
+      .send(helper.extraBlogMissingLikes)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -81,9 +75,12 @@ describe("blogs api", () => {
   });
 
   test("missing an attribute throws a 400", async () => {
-    await api.post("/api/blogs").send(extraBlogMissingAuthor).expect(400);
-    await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
-    await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
+    await api
+      .post("/api/blogs")
+      .send(helper.extraBlogMissingAuthor)
+      .expect(400);
+    await api.post("/api/blogs").send(helper.extraBlogMissingTitle).expect(400);
+    await api.post("/api/blogs").send(helper.extraBlogMissingTitle).expect(400);
   });
 
   test("deletes one blog correctly", async () => {
@@ -96,7 +93,7 @@ describe("blogs api", () => {
     const result = await api.get("/api/blogs").expect(200);
     strictEqual(result.body.length, allBlogs.body.length - 1);
     const ids = result.body.map((e) => e.id);
-    assert(!(initialBlogs[0]._id in ids));
+    assert(!(helper.initialBlogs[0]._id in ids));
   });
 
   test("wrong id throws a 404", async () => {

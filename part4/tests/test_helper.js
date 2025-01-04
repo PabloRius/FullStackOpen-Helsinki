@@ -1,3 +1,5 @@
+import User from "../models/user.js";
+
 const emptyBlogsList = [];
 const oneBlogList = [
   {
@@ -130,7 +132,24 @@ const extraBlogMissingUrl = {
   likes: 1,
 };
 
-export {
+const rootUser = {
+  username: "root",
+  name: "groot",
+  password: "sekret",
+};
+
+const randomUser = {
+  username: "Rando",
+  name: "Carlrissian",
+  password: "sekrettwo",
+};
+
+const usersInDB = async () => {
+  const users = await User.find({});
+  return users.map((u) => u.toJSON());
+};
+
+export default {
   emptyBlogsList,
   oneBlogList,
   blogs,
@@ -140,4 +159,7 @@ export {
   extraBlogMissingAuthor,
   extraBlogMissingTitle,
   extraBlogMissingUrl,
+  rootUser,
+  randomUser,
+  usersInDB,
 };

@@ -1,13 +1,17 @@
 import express from "express";
-import Blog from "../models/blog.js";
+import jwt from "jsonwebtoken";
 import { StatusError } from "../../part3/utils/StatusError.js";
-import { info } from "../utils/logger.js";
+import Blog from "../models/blog.js";
+import User from "../models/user.js";
 
 const blogs_app = express();
 
 blogs_app.get("/", async (req, res, next) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate("user", {
+      username: 1,
+      name: 1,
+    });
     return res.status(200).json(blogs);
   } catch (err) {
     next(err);
@@ -17,7 +21,10 @@ blogs_app.get("/", async (req, res, next) => {
 blogs_app.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).populate("user", {
+      username: 1,
+      name: 1,
+    });
     if (!blog) throw new StatusError(404, `Id ${id} not found`);
     return res.status(200).json(blog);
   } catch (err) {
@@ -26,16 +33,25 @@ blogs_app.get("/:id", async (req, res, next) => {
 });
 
 blogs_app.post("/", async (req, res, next) => {
-  const newBlog = new Blog(req.body);
-  newBlog
-    .save()
-    .then((savedBlog) => {
-      res.status(201).json(savedBlog);
-    })
-    .catch((err) => {
-      info(next);
-      next(err);
+  try {
+    const { userId } = req.body;
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+    if (!decodedToken.id) throw new StatusError(401, "invalid token");
+    const user = await User.findById(decodedToken.id);
+    if (!user)
+      throw new StatusError(404, `No user was found for the userId ${userId}`);
+    const newBlog = new Blog({ ...req.body, user: user.id });
+    const savedBlog = await newBlog.save();
+    user.blogs = user.blogs.concat(savedBlog.id);
+    await user.save();
+    const populatedBlog = await savedBlog.populate("user", {
+      username: 1,
+      name: 1,
     });
+    return res.status(201).json(populatedBlog);
+  } catch (err) {
+    next(err);
+  }
 });
 
 blogs_app.put("/:id", async (req, res, next) => {
