@@ -14,9 +14,9 @@ export const tokenExtractor = (request, response, next) => {
 export const errorHandler = (err, request, response, next) => {
   error("----Error thrown during execution----");
   console.error(err);
-  if (err.url && err.url === "/") {
-    return null;
-  }
+  error(
+    `Error: ${err.message || "No error message"}, status: ${err.status || "undefined"}`
+  );
 
   if (err.name === "ValidationError") {
     return response
@@ -25,22 +25,21 @@ export const errorHandler = (err, request, response, next) => {
   }
 
   if (err.name === "CastError") {
-    return response
-      .status(404)
-      .json({ error: err.message || "Error casting an object" });
-  }
-
-  if (
-    error.name === "MongoServerError" &&
-    error.message.includes("E11000 duplicate key error")
-  ) {
-    return response
-      .status(400)
-      .json({ error: "expected `username` to be unique" });
+    return response.status(404).json({ error: "Malformatted ID" });
   }
 
   if (error.name === "JsonWebTokenError") {
     return response.status(401).json({ error: "Invalid token" });
+  }
+
+  if (error.name === "TokenExpiredError") {
+    return response.status(401).json({ error: "Token expired" });
+  }
+
+  if (error.name === "MongoServerError" && error.code === 11000) {
+    return response
+      .status(400)
+      .json({ error: "Duplicate key error: expected 'username' to be unique" });
   }
 
   return response
