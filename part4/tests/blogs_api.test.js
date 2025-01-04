@@ -85,4 +85,21 @@ describe("blogs api", () => {
     await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
     await api.post("/api/blogs").send(extraBlogMissingTitle).expect(400);
   });
+
+  test("deletes one blog correctly", async () => {
+    const allBlogs = await api.get("/api/blogs").expect(200);
+
+    await api
+      .delete(`/api/blogs/${allBlogs.body[0].id}`)
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+    const result = await api.get("/api/blogs").expect(200);
+    strictEqual(result.body.length, allBlogs.body.length - 1);
+    const ids = result.body.map((e) => e.id);
+    assert(!(initialBlogs[0]._id in ids));
+  });
+
+  test("wrong id throws a 404", async () => {
+    await api.delete(`/api/blogs/randomid`).expect(404);
+  });
 });
