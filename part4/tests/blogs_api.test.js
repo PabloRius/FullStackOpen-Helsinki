@@ -102,4 +102,19 @@ describe("blogs api", () => {
   test("wrong id throws a 404", async () => {
     await api.delete(`/api/blogs/randomid`).expect(404);
   });
+
+  test("number of likes can be updated", async () => {
+    const allBlogs = await api.get("/api/blogs").expect(200);
+
+    const newLikes = allBlogs.body[0].likes + 1;
+    await api
+      .put(`/api/blogs/${allBlogs.body[0].id}`)
+      .send({ likes: newLikes })
+      .expect(200)
+      .expect("Content-Type", /application\/json/);
+    const result = await api
+      .get(`/api/blogs/${allBlogs.body[0].id}`)
+      .expect(200);
+    strictEqual(result.body.likes, newLikes);
+  });
 });
