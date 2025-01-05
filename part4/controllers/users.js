@@ -1,6 +1,7 @@
 import express from "express";
 import { hash } from "bcrypt";
 import User from "../models/user.js";
+import { StatusError } from "../../part3/utils/StatusError.js";
 
 const users_app = express();
 
@@ -21,6 +22,7 @@ users_app.get("/", async (req, res, next) => {
 users_app.post("/", async (req, res, next) => {
   try {
     const { password } = req.body;
+    if (!password) throw new StatusError(400, "Password is required");
     const saltRounds = 10;
     const passwordHash = await hash(password, saltRounds);
     const newUser = new User({ ...req.body, passwordHash });

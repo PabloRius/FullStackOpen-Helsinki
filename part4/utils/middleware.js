@@ -1,3 +1,7 @@
+import jwt from "jsonwebtoken";
+
+import User from "../models/user.js";
+import { SECRET } from "./config.js";
 import { error } from "./logger.js";
 
 export const tokenExtractor = (request, response, next) => {
@@ -7,6 +11,25 @@ export const tokenExtractor = (request, response, next) => {
   } else {
     request.token = null;
   }
+  next();
+};
+
+export const userExtractor = async (request, response, next) => {
+  if (!request.token) {
+    request.user = null;
+    next();
+  }
+  console.log("PRE", request.token);
+  const decodedToken = jwt.verify(request.token, SECRET);
+  console.log("POST");
+  if (!decodedToken.id)
+    return response.status(401).json({ error: "invalid token" });
+  const user = await User.findById(decodedToken.id);
+  if (!user)
+    return response
+      .status(404)
+      .json({ error: `No user was found for the userId ${decodedToken.id}` });
+  request.user = user;
   next();
 };
 

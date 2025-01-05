@@ -7,7 +7,11 @@ import { loginRouter } from "./controllers/login.js";
 import { users_app } from "./controllers/users.js";
 import { blogs_app } from "./controllers/blogs.js";
 
-import { errorHandler, tokenExtractor } from "./utils/middleware.js";
+import {
+  errorHandler,
+  tokenExtractor,
+  userExtractor,
+} from "./utils/middleware.js";
 
 import { MONGODB_URI } from "./utils/config.js";
 import { error, info } from "./utils/logger.js";
@@ -32,7 +36,7 @@ app.use(tokenExtractor);
 
 app.use("/api/login", loginRouter);
 
-app.use("/api/blogs", blogs_app);
+app.use("/api/blogs", userExtractor, blogs_app);
 
 app.use("/api/users", users_app);
 

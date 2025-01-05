@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import { StatusError } from "../../part3/utils/StatusError.js";
+import { SECRET } from "../utils/config.js";
 
 export const loginRouter = express.Router();
 
@@ -28,7 +29,7 @@ loginRouter.post("/", async (req, res, next) => {
       id: user._id,
     };
 
-    const token = jwt.sign(userForToken, process.env.SECRET);
+    const token = jwt.sign(userForToken, SECRET);
 
     return res
       .status(200)

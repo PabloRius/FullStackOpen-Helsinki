@@ -1,8 +1,6 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import { StatusError } from "../../part3/utils/StatusError.js";
 import Blog from "../models/blog.js";
-import User from "../models/user.js";
 
 const blogs_app = express();
 
@@ -34,14 +32,7 @@ blogs_app.get("/:id", async (req, res, next) => {
 
 blogs_app.post("/", async (req, res, next) => {
   try {
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-    if (!decodedToken.id) throw new StatusError(401, "invalid token");
-    const user = await User.findById(decodedToken.id);
-    if (!user)
-      throw new StatusError(
-        404,
-        `No user was found for the userId ${req.token}`
-      );
+    const { user } = req;
     const newBlog = new Blog({ ...req.body, user: user.id });
     const savedBlog = await newBlog.save();
     user.blogs = user.blogs.concat(savedBlog.id);
@@ -73,15 +64,7 @@ blogs_app.put("/:id", async (req, res, next) => {
 blogs_app.delete("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const decodedToken = jwt.verify(req.token, process.env.SECRET);
-    if (!decodedToken.id) throw new StatusError(401, "invalid token");
-
-    const user = await User.findById(decodedToken.id);
-    if (!user)
-      throw new StatusError(
-        404,
-        `No user was found for the userId ${req.token}`
-      );
+    const { user } = req;
 
     const blogToDelete = await Blog.findById(id);
     if (!blogToDelete) throw new StatusError(404, `Id ${id} not found`);
