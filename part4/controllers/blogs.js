@@ -34,12 +34,14 @@ blogs_app.get("/:id", async (req, res, next) => {
 
 blogs_app.post("/", async (req, res, next) => {
   try {
-    const { userId } = req.body;
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
     if (!decodedToken.id) throw new StatusError(401, "invalid token");
     const user = await User.findById(decodedToken.id);
     if (!user)
-      throw new StatusError(404, `No user was found for the userId ${userId}`);
+      throw new StatusError(
+        404,
+        `No user was found for the userId ${req.token}`
+      );
     const newBlog = new Blog({ ...req.body, user: user.id });
     const savedBlog = await newBlog.save();
     user.blogs = user.blogs.concat(savedBlog.id);
@@ -71,8 +73,23 @@ blogs_app.put("/:id", async (req, res, next) => {
 blogs_app.delete("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+    if (!decodedToken.id) throw new StatusError(401, "invalid token");
+
+    const user = await User.findById(decodedToken.id);
+    if (!user)
+      throw new StatusError(
+        404,
+        `No user was found for the userId ${req.token}`
+      );
+
+    const blogToDelete = await Blog.findById(id);
+    if (!blogToDelete) throw new StatusError(404, `Id ${id} not found`);
+
+    if (user.id.toString() !== blogToDelete.user.toString())
+      throw new StatusError(401, "Can't delete other user's blog");
+
     const deletedBlog = await Blog.findByIdAndDelete(id);
-    if (!deletedBlog) throw new StatusError(404, `Id ${id} not found`);
     return res.status(200).json(deletedBlog);
   } catch (err) {
     next(err);
