@@ -15,22 +15,24 @@ export const tokenExtractor = (request, response, next) => {
 };
 
 export const userExtractor = async (request, response, next) => {
-  if (!request.token) {
-    request.user = null;
+  try {
+    if (!request.token) {
+      request.user = null;
+      return next();
+    }
+    const decodedToken = jwt.verify(request.token, SECRET);
+    if (!decodedToken.id)
+      return response.status(401).json({ error: "invalid token" });
+    const user = await User.findById(decodedToken.id);
+    if (!user)
+      return response
+        .status(404)
+        .json({ error: `No user was found for the userId ${decodedToken.id}` });
+    request.user = user;
     next();
+  } catch (err) {
+    next(err);
   }
-  console.log("PRE", request.token);
-  const decodedToken = jwt.verify(request.token, SECRET);
-  console.log("POST");
-  if (!decodedToken.id)
-    return response.status(401).json({ error: "invalid token" });
-  const user = await User.findById(decodedToken.id);
-  if (!user)
-    return response
-      .status(404)
-      .json({ error: `No user was found for the userId ${decodedToken.id}` });
-  request.user = user;
-  next();
 };
 
 // eslint-disable-next-line no-unused-vars

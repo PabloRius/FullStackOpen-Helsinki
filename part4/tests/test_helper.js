@@ -102,10 +102,9 @@ const initialBlogs = [
 ];
 
 const extraBlog = {
-  title: "Clean Code",
-  author: "Brandon Sanderson",
-  url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
-  likes: 47,
+  title: "Tales of a piece of wood",
+  author: "Groot",
+  url: "norul",
 };
 
 const extraBlogMissingLikes = {
